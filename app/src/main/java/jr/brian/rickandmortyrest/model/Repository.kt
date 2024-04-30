@@ -1,0 +1,15 @@
+package jr.brian.rickandmortyrest.model
+
+import jr.brian.rickandmortyrest.model.remote.ApiService
+import jr.brian.rickandmortyrest.model.remote.callApi
+import javax.inject.Inject
+
+class Repository @Inject constructor(private val apiService: ApiService) {
+    fun getUserById(id: String) = callApi {
+        apiService.getCharacterById(id)
+    }
+
+    fun getUserByName(name: String) = callApi {
+        apiService.getCharacterByName(name)
+    }
+}
