@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun refreshCharacters(
-        onSuccess: (msg: String) -> Unit
+        onStateChange: (msg: String) -> Unit
     ) {
         workRequest = PeriodicWorkRequest.Builder(
             ApiWorker::class.java,
@@ -103,12 +103,13 @@ class MainActivity : ComponentActivity() {
                     WorkInfo.State.SUCCEEDED -> {
                         val msg =
                             "Room DB has been updated"
-                        onSuccess(msg)
+                        onStateChange(msg)
                         Log.d(TAG, msg)
                     }
 
                     WorkInfo.State.FAILED -> {
                         val msg = "Operation Failed"
+                        onStateChange(msg)
                         Log.d(TAG, msg)
                     }
 
