@@ -5,7 +5,11 @@ import jr.brian.rickandmortyrest.model.remote.callApi
 import javax.inject.Inject
 
 class Repository @Inject constructor(private val apiService: ApiService) {
-    fun getUserByName(name: String) = callApi {
+    fun getCharacterByName(name: String) = callApi {
         apiService.getCharacterByName(name)
+    }
+
+    fun getAllCharacters(pageNumber: String) = callApi {
+        apiService.getAllCharacters(pageNumber)
     }
 }
