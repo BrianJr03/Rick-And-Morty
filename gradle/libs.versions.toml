@@ -1,6 +1,7 @@
 [versions]
 adapterRxjava2 = "2.9.0"
 agp = "8.4.0-rc02"
+coilCompose = "2.6.0"
 hiltAndroid = "2.51"
 junitJupiterApi = "5.9.3"
 kotlin = "1.9.22"
@@ -15,7 +16,7 @@ activityCompose = "1.9.0"
 composeBom = "2024.04.01"
 hilt = "2.51"
 ksp = "1.9.22-1.0.17"
-lifecycleRuntimeKtxVersion = "2.6.1"
+lifecycleRuntimeKtxVersion = "2.7.0"
 loggingInterceptor = "4.10.0"
 mockk = "1.13.5"
 moshi = "1.15.0"
@@ -30,6 +31,7 @@ androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensi
 androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-lifecycle-runtime-ktx-v261 = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeKtxVersion" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "adapterRxjava2" }
 converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "adapterRxjava2" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
