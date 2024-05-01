@@ -125,22 +125,27 @@ fun HomeScreen(
 
         item(span = StaggeredGridItemSpan.FullLine) {
             if (isError.value) {
-                dao.removeAllCharacters()
                 LabelSection(label = errorMsg.value)
             }
         }
 
-        if (charactersFromSearch.value.isNotEmpty()) {
+        if (charactersFromSearch.value.isNotEmpty()
+            && charactersFromSearch.value != characters.value
+        ) {
             item(span = StaggeredGridItemSpan.FullLine) {
                 DividerSection(label = "Search Results")
             }
         }
 
-        items(charactersFromSearch.value.size) {
-            CharacterCard(character = charactersFromSearch.value[it])
+        if (charactersFromSearch.value.isNotEmpty()
+            && charactersFromSearch.value != characters.value
+        ) {
+            items(charactersFromSearch.value.size) {
+                CharacterCard(character = charactersFromSearch.value[it])
+            }
         }
 
-        if (charactersFromSearch.value.isNotEmpty()) {
+        if (characters.value.isNotEmpty()) {
             item(span = StaggeredGridItemSpan.FullLine) {
                 DividerSection(label = "Saved")
             }
