@@ -1,6 +1,7 @@
 package jr.brian.rickandmortyrest.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -35,43 +37,127 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import coil.compose.AsyncImage
 import dagger.hilt.android.AndroidEntryPoint
 import jr.brian.rickandmortyrest.model.AppState
 import jr.brian.rickandmortyrest.model.local.Character
+import jr.brian.rickandmortyrest.model.local.database.CharacterDao
+import jr.brian.rickandmortyrest.model.remote.ApiWorker
 import jr.brian.rickandmortyrest.ui.theme.RickAndMortyRESTTheme
 import jr.brian.rickandmortyrest.util.formatDate
 import jr.brian.rickandmortyrest.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val vm: MainViewModel by viewModels()
+    private lateinit var workRequest: PeriodicWorkRequest
+
+    var dao: CharacterDao? = null
+        @Inject set
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        refreshCharacters()
         setContent {
             RickAndMortyRESTTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeScreen(
-                        viewModel = vm,
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize()
-                    )
+                    dao?.let {
+                        HomeScreen(
+                            dao = it,
+                            viewModel = vm,
+                            progressStr = progressStr,
+                            modifier = Modifier
+                                .padding(innerPadding)
+                                .fillMaxSize()
+                        )
+                    }
                 }
             }
         }
+    }
+
+    private fun refreshCharacters() {
+        workRequest = PeriodicWorkRequest.Builder(
+            ApiWorker::class.java,
+            15,
+            TimeUnit.MINUTES
+        )
+            .setConstraints(
+                Constraints.Builder().apply {
+                    setRequiredNetworkType(NetworkType.CONNECTED)
+                    setRequiresBatteryNotLow(true)
+                }.build()
+            )
+            .build()
+
+        val workManager = WorkManager.getInstance(this)
+
+        workManager.enqueue(workRequest)
+
+        workManager
+            .getWorkInfoByIdLiveData(workRequest.id)
+            .observe(this) { workInfo: WorkInfo ->
+
+                when (workInfo.state) {
+                    WorkInfo.State.ENQUEUED -> {
+                        val msg = "Operation Enqueued"
+                        Log.d(TAG, msg)
+                    }
+
+                    WorkInfo.State.RUNNING -> {
+                        val msg = "Operation Running"
+                        Log.d(TAG, msg)
+                    }
+
+                    WorkInfo.State.SUCCEEDED -> {
+                        val msg =
+                            "Room DB has been updated"
+                        Log.d(TAG, msg)
+                    }
+
+                    WorkInfo.State.FAILED -> {
+                        val msg = "Operation Failed"
+                        Log.d(TAG, msg)
+                    }
+
+                    WorkInfo.State.BLOCKED -> {
+                        val msg = "Operation Blocked"
+                        Log.d(TAG, msg)
+                    }
+
+                    WorkInfo.State.CANCELLED -> {
+                        val msg = "Operation Cancelled"
+                        Log.d(TAG, msg)
+                    }
+                }
+            }
+
+    }
+
+    companion object {
+        const val TAG = "MyWorker"
+        var progressStr = ""
     }
 }
 
 @Composable
 fun HomeScreen(
+    dao: CharacterDao,
+    progressStr: String,
     viewModel: MainViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val characters = remember { mutableStateOf<List<Character>>(emptyList()) }
+    val characters = dao.getCharacters().collectAsState(initial = emptyList())
+    val charactersFromSearch = remember { mutableStateOf<List<Character>>(emptyList()) }
 
     val fm = LocalFocusManager.current
     val scope = rememberCoroutineScope()
@@ -89,7 +175,10 @@ fun HomeScreen(
             isLoading.value = false
             isError.value = false
             currentState.data?.let {
-                characters.value = it.results
+                it.results.onEach { character ->
+                    dao.insertCharacter(character)
+                }
+                charactersFromSearch.value = it.results
             }
         }
 
@@ -114,6 +203,19 @@ fun HomeScreen(
         columns = StaggeredGridCells.Fixed(2),
         modifier = modifier,
     ) {
+        item(
+            span = StaggeredGridItemSpan.FullLine
+        ) {
+            Row(modifier = Modifier.padding(10.dp)) {
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = progressStr,
+                    style = TextStyle(fontSize = 20.sp)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+        }
+
         item(
             span = StaggeredGridItemSpan.FullLine
         ) {
@@ -144,6 +246,7 @@ fun HomeScreen(
                 ),
                 onClick = {
                     fm.clearFocus()
+                    charactersFromSearch.value = emptyList()
                     if (text.value.isNotBlank()) {
                         scope.launch {
                             viewModel.getCharacterByName(text.value)
@@ -163,7 +266,7 @@ fun HomeScreen(
             span = StaggeredGridItemSpan.FullLine
         ) {
             if (isError.value) {
-                characters.value = emptyList()
+                dao.removeAllCharacters()
                 Row(modifier = Modifier.padding(10.dp)) {
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
@@ -175,39 +278,54 @@ fun HomeScreen(
             }
         }
 
+        items(charactersFromSearch.value.size) {
+            CharacterCard(character = charactersFromSearch.value[it])
+        }
+
+        if (charactersFromSearch.value.isNotEmpty()) {
+            item(span = StaggeredGridItemSpan.FullLine) {
+                HorizontalDivider(thickness = 10.dp)
+            }
+        }
+
         items(characters.value.size) {
-            Card(
-                modifier = Modifier.padding(15.dp),
-                elevation = CardDefaults.cardElevation(10.dp)
-            ) {
-                Box {
-                    Column {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        AsyncImage(
-                            model = characters.value[it].image,
-                            contentDescription = characters.value[it].name,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        Text(
-                            text = "Name: ${characters.value[it].name}",
-                            modifier = Modifier.padding(
-                                5.dp
-                            )
-                        )
-                        Text(
-                            text = "Status: ${characters.value[it].status}",
-                            modifier = Modifier.padding(
-                                5.dp
-                            )
-                        )
-                        Text(
-                            text = "Created: ${characters.value[it].created.formatDate()}",
-                            modifier = Modifier.padding(
-                                5.dp
-                            )
-                        )
-                    }
-                }
+            CharacterCard(character = characters.value[it])
+        }
+    }
+}
+
+@Composable
+fun CharacterCard(character: Character) {
+    Card(
+        modifier = Modifier.padding(15.dp),
+        elevation = CardDefaults.cardElevation(10.dp)
+    ) {
+        Box {
+            Column {
+                Spacer(modifier = Modifier.height(10.dp))
+                AsyncImage(
+                    model = character.image,
+                    contentDescription = character.name,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Text(
+                    text = "Name: ${character.name}",
+                    modifier = Modifier.padding(
+                        5.dp
+                    )
+                )
+                Text(
+                    text = "Status: ${character.status}",
+                    modifier = Modifier.padding(
+                        5.dp
+                    )
+                )
+                Text(
+                    text = "Created: ${character.created.formatDate()}",
+                    modifier = Modifier.padding(
+                        5.dp
+                    )
+                )
             }
         }
     }

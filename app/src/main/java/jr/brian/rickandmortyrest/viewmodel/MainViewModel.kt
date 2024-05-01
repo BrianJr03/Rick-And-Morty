@@ -17,7 +17,15 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
     val state = _state.asStateFlow()
     fun getCharacterByName(name: String) {
         viewModelScope.launch {
-            repository.getUserByName(name).collect {
+            repository.getCharacterByName(name).collect {
+                _state.emit(it)
+            }
+        }
+    }
+
+    fun getAllCharacters(pageNumber: String) {
+        viewModelScope.launch {
+            repository.getAllCharacters(pageNumber).collect {
                 _state.emit(it)
             }
         }
