@@ -1,6 +1,8 @@
 package jr.brian.rickandmortyrest.view.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -82,6 +84,10 @@ fun HomeScreen(
         modifier = modifier,
     ) {
         item(span = StaggeredGridItemSpan.FullLine) {
+            Spacer(modifier = Modifier.height(15.dp))
+        }
+
+        item(span = StaggeredGridItemSpan.FullLine) {
             TextField(
                 value = text.value,
                 onValueChange = {
@@ -103,6 +109,7 @@ fun HomeScreen(
                 shape = RectangleShape,
                 modifier = Modifier.padding(
                     start = 15.dp,
+                    bottom = 10.dp,
                     end = 15.dp
                 ),
                 onClick = {
