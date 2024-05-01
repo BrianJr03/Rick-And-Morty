@@ -141,6 +141,7 @@ fun HomeScreen(
                         end = 15.dp
                     ),
                     onClick = {
+                        charactersFromSearch.value = emptyList()
                         dao.removeAllCharacters()
                     }
                 ) {
