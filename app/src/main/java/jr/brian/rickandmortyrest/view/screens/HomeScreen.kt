@@ -1,6 +1,7 @@
 package jr.brian.rickandmortyrest.view.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -105,27 +106,45 @@ fun HomeScreen(
         }
 
         item(span = StaggeredGridItemSpan.FullLine) {
-            Button(
-                shape = RectangleShape,
-                modifier = Modifier.padding(
-                    start = 15.dp,
-                    bottom = 10.dp,
-                    end = 15.dp
-                ),
-                onClick = {
-                    fm.clearFocus()
-                    charactersFromSearch.value = emptyList()
-                    if (text.value.isNotBlank()) {
-                        scope.launch {
-                            viewModel.getCharacterByName(text.value)
+            Row(horizontalArrangement = Arrangement.Center) {
+                Button(
+                    shape = RectangleShape,
+                    modifier = Modifier.padding(
+                        start = 15.dp,
+                        bottom = 10.dp,
+                        end = 15.dp
+                    ),
+                    onClick = {
+                        if (!isLoading.value) {
+                            fm.clearFocus()
+                            charactersFromSearch.value = emptyList()
+                            if (text.value.isNotBlank()) {
+                                scope.launch {
+                                    viewModel.getCharacterByName(text.value)
+                                }
+                            }
                         }
                     }
+                ) {
+                    if (isLoading.value) {
+                        CircularProgressIndicator(color = Color.Black)
+                    } else {
+                        Text(text = "Search")
+                    }
                 }
-            ) {
-                if (isLoading.value) {
-                    CircularProgressIndicator(color = Color.Black)
-                } else {
-                    Text(text = "Search")
+
+                Button(
+                    shape = RectangleShape,
+                    modifier = Modifier.padding(
+                        start = 15.dp,
+                        bottom = 10.dp,
+                        end = 15.dp
+                    ),
+                    onClick = {
+                        dao.removeAllCharacters()
+                    }
+                ) {
+                    Text(text = "Clear All")
                 }
             }
         }
