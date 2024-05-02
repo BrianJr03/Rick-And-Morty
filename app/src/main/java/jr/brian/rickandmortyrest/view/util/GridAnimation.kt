@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 
 private enum class State { PLACING, PLACED }
 
-data class ScaleAndAlphaArgs(
+private data class ScaleAndAlphaArgs(
     val fromScale: Float,
     val toScale: Float,
     val fromAlpha: Float,
@@ -40,7 +40,7 @@ private fun scaleAndAlpha(
 }
 
 @Composable
-fun LazyStaggeredGridState.calculateDelayAndEasing(
+private fun LazyStaggeredGridState.calculateDelayAndEasing(
     index: Int,
     columnCount: Int
 ): Pair<Int, Easing> {
