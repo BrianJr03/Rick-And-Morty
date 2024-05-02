@@ -1,5 +1,6 @@
 package jr.brian.rickandmortyrest.view.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -14,9 +15,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DividerSection(label: String) {
+fun DividerSection(
+    label: String,
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = Modifier.padding(10.dp),
+        modifier = modifier.padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -29,14 +33,21 @@ fun DividerSection(label: String) {
         )
         HorizontalDivider(
             thickness = 10.dp,
-            modifier = Modifier.padding(end = 5.dp)
+            modifier = Modifier
+                .padding(end = 5.dp)
+                .background(MaterialTheme.colorScheme.primary)
         )
     }
 }
 
 @Composable
-fun LabelSection(label: String) {
-    Row(modifier = Modifier.padding(10.dp)) {
+fun LabelSection(
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.padding(10.dp)
+    ) {
         Spacer(modifier = Modifier.weight(1f))
         Text(
             text = label,
