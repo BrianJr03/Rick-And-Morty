@@ -70,7 +70,7 @@ fun getScaleAndAlpha(
 ): Pair<Float, Float> {
     val (delay, easing) = gridState.calculateDelayAndEasing(index, columnCount)
     val animation =
-        tween<Float>(durationMillis = 150, delayMillis = delay, easing = easing)
+        tween<Float>(durationMillis = 100, delayMillis = delay, easing = easing)
     val args =
         ScaleAndAlphaArgs(fromScale = 2f, toScale = 1f, fromAlpha = 0f, toAlpha = 1f)
     return scaleAndAlpha(args = args, animation = animation)

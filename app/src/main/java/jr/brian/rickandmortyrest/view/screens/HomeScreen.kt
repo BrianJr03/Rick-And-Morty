@@ -168,7 +168,7 @@ fun HomeScreen(
             && charactersFromSearch.value != characters.value
         ) {
             item(span = StaggeredGridItemSpan.FullLine) {
-                DividerSection(label = "Search Results")
+                DividerSection(label = "Search Results (${charactersFromSearch.value.size})")
             }
         }
 
@@ -197,7 +197,7 @@ fun HomeScreen(
 
         if (characters.value.isNotEmpty()) {
             item(span = StaggeredGridItemSpan.FullLine) {
-                DividerSection(label = "Saved")
+                DividerSection(label = "Saved (${characters.value.size})")
             }
         }
 
