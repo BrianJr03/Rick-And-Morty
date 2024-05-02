@@ -33,9 +33,8 @@ fun DividerSection(
         )
         HorizontalDivider(
             thickness = 10.dp,
-            modifier = Modifier
-                .padding(end = 5.dp)
-                .background(MaterialTheme.colorScheme.primary)
+            modifier = Modifier.padding(end = 5.dp),
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }
