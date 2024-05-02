@@ -26,7 +26,6 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
-import jr.brian.rickandmortyrest.model.local.Character
 import jr.brian.rickandmortyrest.model.local.database.CharacterDao
 import jr.brian.rickandmortyrest.model.remote.ApiWorker
 import jr.brian.rickandmortyrest.ui.theme.RickAndMortyRESTTheme
@@ -88,7 +87,6 @@ class MainActivity : ComponentActivity() {
         workManager
             .getWorkInfoByIdLiveData(workRequest.id)
             .observe(this) { workInfo: WorkInfo ->
-
                 when (workInfo.state) {
                     WorkInfo.State.ENQUEUED -> {
                         val msg = "Operation Enqueued"
@@ -124,11 +122,13 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-
     }
 
     companion object {
+        const val ID = "id"
         const val TAG = "MyWorker"
+        const val HOME_SCREEN_ROUTE = "home"
+        const val CHARACTER_SCREEN_ROUTE = "character/{id}"
     }
 }
 
@@ -141,22 +141,29 @@ fun NavigationComposeShared(
 ) {
     SharedTransitionLayout {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = "home") {
-            composable(route = "home") {
+        NavHost(
+            navController = navController,
+            startDestination = MainActivity.HOME_SCREEN_ROUTE
+        ) {
+            composable(route = MainActivity.HOME_SCREEN_ROUTE) {
                 HomeScreen(
                     dao = dao,
                     viewModel = viewModel,
-                    modifier = Modifier
-                        .padding(scaffoldPaddingValues)
-
+                    modifier = Modifier.padding(scaffoldPaddingValues),
+                    onCharacterClick = {
+                        navController.navigate("character/${it.id}")
+                    }
                 )
             }
 
             composable(
-                route = "character/{id}",
-                arguments = listOf(navArgument("id") { type = NavType.StringType })
+                route = MainActivity.CHARACTER_SCREEN_ROUTE,
+                arguments = listOf(navArgument(MainActivity.ID) { type = NavType.StringType })
             ) {
-                CharacterScreen(character = Character.EMPTY) // TODO - Pass Character
+                CharacterScreen(
+                    dao = dao,
+                    backStackEntry = it
+                )
             }
         }
     }

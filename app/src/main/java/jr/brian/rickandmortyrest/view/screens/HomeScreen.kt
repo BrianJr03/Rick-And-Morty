@@ -1,5 +1,6 @@
 package jr.brian.rickandmortyrest.view.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -20,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import jr.brian.rickandmortyrest.model.AppState
@@ -28,6 +31,7 @@ import jr.brian.rickandmortyrest.model.local.database.CharacterDao
 import jr.brian.rickandmortyrest.view.composables.CharacterCard
 import jr.brian.rickandmortyrest.view.composables.DividerSection
 import jr.brian.rickandmortyrest.view.composables.LabelSection
+import jr.brian.rickandmortyrest.view.util.getScaleAndAlpha
 import jr.brian.rickandmortyrest.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -36,6 +40,7 @@ fun HomeScreen(
     dao: CharacterDao,
     viewModel: MainViewModel,
     modifier: Modifier = Modifier,
+    onCharacterClick: (Character) -> Unit
 ) {
     val characters = dao.getCharacters().collectAsState(initial = emptyList())
     val charactersFromSearch = remember { mutableStateOf<List<Character>>(emptyList()) }
@@ -50,6 +55,7 @@ fun HomeScreen(
     val isError = remember { mutableStateOf(false) }
 
     val state = viewModel.state.collectAsState()
+    val gridState = rememberLazyStaggeredGridState()
 
     when (val currentState = state.value) {
         is AppState.Success -> {
@@ -80,9 +86,10 @@ fun HomeScreen(
     }
 
     LazyVerticalStaggeredGrid(
+        state = gridState,
+        modifier = modifier,
         horizontalArrangement = Arrangement.Center,
         columns = StaggeredGridCells.Fixed(2),
-        modifier = modifier,
     ) {
         item(span = StaggeredGridItemSpan.FullLine) {
             Spacer(modifier = Modifier.height(15.dp))
@@ -97,11 +104,12 @@ fun HomeScreen(
                 label = {
                     Text(text = "Character Name")
                 },
-                modifier = Modifier.padding(
-                    start = 15.dp,
-                    end = 15.dp,
-                    bottom = 15.dp
-                )
+                modifier = Modifier
+                    .padding(
+                        start = 15.dp,
+                        end = 15.dp,
+                        bottom = 15.dp
+                    )
             )
         }
 
@@ -168,7 +176,22 @@ fun HomeScreen(
             && charactersFromSearch.value != characters.value
         ) {
             items(charactersFromSearch.value.size) {
-                CharacterCard(character = charactersFromSearch.value[it])
+                val (scale, alpha) = getScaleAndAlpha(
+                    index = it,
+                    gridState = gridState
+                )
+                CharacterCard(
+                    character = charactersFromSearch.value[it],
+                    modifier = Modifier
+                        .graphicsLayer(
+                            alpha = alpha,
+                            scaleX = scale,
+                            scaleY = scale
+                        )
+                        .clickable {
+                            onCharacterClick(characters.value[it])
+                        }
+                )
             }
         }
 
@@ -179,7 +202,22 @@ fun HomeScreen(
         }
 
         items(characters.value.size) {
-            CharacterCard(character = characters.value[it])
+            val (scale, alpha) = getScaleAndAlpha(
+                index = it,
+                gridState = gridState
+            )
+            CharacterCard(
+                character = characters.value[it],
+                modifier = Modifier
+                    .graphicsLayer(
+                        alpha = alpha,
+                        scaleX = scale,
+                        scaleY = scale
+                    )
+                    .clickable {
+                        onCharacterClick(characters.value[it])
+                    }
+            )
         }
 
         if (characters.value.isEmpty()) {
