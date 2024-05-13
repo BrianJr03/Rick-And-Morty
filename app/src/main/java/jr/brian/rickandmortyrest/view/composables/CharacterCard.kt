@@ -3,7 +3,6 @@ package jr.brian.rickandmortyrest.view.composables
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -19,7 +18,8 @@ import jr.brian.rickandmortyrest.model.local.Character
 @Composable
 fun CharacterCard(
     character: Character,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    imageModifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier.padding(15.dp),
@@ -30,12 +30,12 @@ fun CharacterCard(
                 Spacer(modifier = modifier.height(10.dp))
                 AsyncImage(
                     model = character.image,
+                    modifier = imageModifier,
                     contentDescription = character.name,
-                    modifier = modifier.fillMaxSize()
                 )
                 Text(
                     text = character.name,
-                    modifier = modifier.padding(
+                    modifier = Modifier.padding(
                         10.dp
                     )
                 )

@@ -5,13 +5,20 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
 import androidx.hilt.work.HiltWorker
+import androidx.work.Constraints
 import androidx.work.CoroutineWorker
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import jr.brian.rickandmortyrest.model.AppState
 import jr.brian.rickandmortyrest.model.Repository
 import jr.brian.rickandmortyrest.model.local.database.CharacterDao
+import jr.brian.rickandmortyrest.view.MainActivity
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltWorker
@@ -67,6 +74,73 @@ class ApiWorker @AssistedInject constructor(
             return Result.Success.success()
         } else {
             return Result.retry()
+        }
+    }
+
+    companion object {
+        private lateinit var workRequest: PeriodicWorkRequest
+
+        fun fetchDataInBackground(
+            context: Context,
+            onStateChange: (msg: String) -> Unit
+        ) {
+            if (context !is MainActivity) return
+
+            workRequest = PeriodicWorkRequest.Builder(
+                ApiWorker::class.java,
+                15,
+                TimeUnit.MINUTES
+            )
+                .setConstraints(
+                    Constraints.Builder().apply {
+                        setRequiredNetworkType(NetworkType.CONNECTED)
+                        setRequiresBatteryNotLow(true)
+                    }.build()
+                )
+                .build()
+
+            val workManager = WorkManager.getInstance(context)
+
+            workManager.enqueue(workRequest)
+
+            workManager
+                .getWorkInfoByIdLiveData(workRequest.id)
+                .observe(context) { workInfo: WorkInfo ->
+                    when (workInfo.state) {
+                        WorkInfo.State.ENQUEUED -> {
+                            val msg = "Operation Enqueued"
+                            Log.d(MainActivity.TAG, msg)
+                        }
+
+                        WorkInfo.State.RUNNING -> {
+                            val msg = "Operation Running"
+                            Log.d(MainActivity.TAG, msg)
+                        }
+
+                        WorkInfo.State.SUCCEEDED -> {
+                            val msg =
+                                "Room DB has been updated"
+                            onStateChange(msg)
+                            Log.d(MainActivity.TAG, msg)
+                        }
+
+                        WorkInfo.State.FAILED -> {
+                            val msg = "Operation Failed"
+                            onStateChange(msg)
+                            Log.d(MainActivity.TAG, msg)
+                        }
+
+                        WorkInfo.State.BLOCKED -> {
+                            val msg = "Operation Blocked"
+                            Log.d(MainActivity.TAG, msg)
+                        }
+
+                        WorkInfo.State.CANCELLED -> {
+                            val msg = "Operation Cancelled"
+                            Log.d(MainActivity.TAG, msg)
+                        }
+                    }
+                }
         }
     }
 }

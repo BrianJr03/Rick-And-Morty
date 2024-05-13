@@ -4,12 +4,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
@@ -24,11 +27,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import jr.brian.rickandmortyrest.model.AppState
 import jr.brian.rickandmortyrest.model.local.Character
 import jr.brian.rickandmortyrest.model.local.database.CharacterDao
 import jr.brian.rickandmortyrest.view.composables.CharacterCard
+import jr.brian.rickandmortyrest.view.composables.CustomDialog
 import jr.brian.rickandmortyrest.view.composables.DividerSection
 import jr.brian.rickandmortyrest.view.composables.LabelSection
 import jr.brian.rickandmortyrest.view.util.getScaleAndAlpha
@@ -39,13 +44,13 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     dao: CharacterDao,
     viewModel: MainViewModel,
-    modifier: Modifier = Modifier,
-    onCharacterClick: (Character) -> Unit
+    modifier: Modifier = Modifier
 ) {
     val characters = dao.getCharacters().collectAsState(initial = emptyList())
     val charactersFromSearch = remember { mutableStateOf<List<Character>>(emptyList()) }
+    val selectedCharacter = remember { mutableStateOf(Character.EMPTY) }
 
-    val fm = LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
 
     val text = remember { mutableStateOf("") }
@@ -53,9 +58,22 @@ fun HomeScreen(
 
     val isLoading = remember { mutableStateOf(false) }
     val isError = remember { mutableStateOf(false) }
+    val isShowingDialog = remember { mutableStateOf(false) }
 
     val state = viewModel.state.collectAsState()
     val gridState = rememberLazyStaggeredGridState()
+
+    val searchOnClick = {
+        focusManager.clearFocus()
+        if (!isLoading.value) {
+            charactersFromSearch.value = emptyList()
+            if (text.value.isNotBlank()) {
+                scope.launch {
+                    viewModel.getCharacterByName(text.value)
+                }
+            }
+        }
+    }
 
     when (val currentState = state.value) {
         is AppState.Success -> {
@@ -85,6 +103,13 @@ fun HomeScreen(
         }
     }
 
+    CustomDialog(
+        showDialog = isShowingDialog.value,
+        onDismissRequest = { isShowingDialog.value = false }
+    ) {
+        CharacterScreen(selectedCharacter.value)
+    }
+
     LazyVerticalStaggeredGrid(
         state = gridState,
         modifier = modifier,
@@ -104,6 +129,12 @@ fun HomeScreen(
                 label = {
                     Text(text = "Character Name")
                 },
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        searchOnClick()
+                    }
+                ),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 modifier = Modifier
                     .padding(
                         start = 15.dp,
@@ -123,15 +154,7 @@ fun HomeScreen(
                         end = 15.dp
                     ),
                     onClick = {
-                        if (!isLoading.value) {
-                            fm.clearFocus()
-                            charactersFromSearch.value = emptyList()
-                            if (text.value.isNotBlank()) {
-                                scope.launch {
-                                    viewModel.getCharacterByName(text.value)
-                                }
-                            }
-                        }
+                        searchOnClick()
                     }
                 ) {
                     if (isLoading.value) {
@@ -183,13 +206,15 @@ fun HomeScreen(
                 CharacterCard(
                     character = charactersFromSearch.value[it],
                     modifier = Modifier
+                        .fillMaxSize()
                         .graphicsLayer(
                             alpha = alpha,
                             scaleX = scale,
                             scaleY = scale
                         )
                         .clickable {
-                            onCharacterClick(characters.value[it])
+                            selectedCharacter.value = charactersFromSearch.value[it]
+                            isShowingDialog.value = true
                         }
                 )
             }
@@ -209,13 +234,15 @@ fun HomeScreen(
             CharacterCard(
                 character = characters.value[it],
                 modifier = Modifier
+                    .fillMaxSize()
                     .graphicsLayer(
                         alpha = alpha,
                         scaleX = scale,
                         scaleY = scale
                     )
                     .clickable {
-                        onCharacterClick(characters.value[it])
+                        selectedCharacter.value = characters.value[it]
+                        isShowingDialog.value = true
                     }
             )
         }
