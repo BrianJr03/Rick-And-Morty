@@ -9,7 +9,12 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+
+val customPink = Color.hsl(hue=340f, saturation = 1f, lightness = 0.625f)
+val customYellow = Color.hsl(hue = 70f, saturation = 1f, lightness = 0.89f)
+val customGreen = Color.hsl(hue = 160f, saturation = 1f, lightness = 0.75f)
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,

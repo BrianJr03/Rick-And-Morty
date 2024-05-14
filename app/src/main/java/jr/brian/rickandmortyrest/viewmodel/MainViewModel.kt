@@ -22,12 +22,4 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
             }
         }
     }
-
-    fun getAllCharacters(pageNumber: String) {
-        viewModelScope.launch {
-            repository.getAllCharacters(pageNumber).collect {
-                _state.emit(it)
-            }
-        }
-    }
 }

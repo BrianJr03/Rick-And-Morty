@@ -20,6 +20,7 @@ import jr.brian.rickandmortyrest.model.local.database.CharacterDao
 import jr.brian.rickandmortyrest.view.MainActivity
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltWorker
 class ApiWorker @AssistedInject constructor(
@@ -31,7 +32,7 @@ class ApiWorker @AssistedInject constructor(
     var dao: CharacterDao? = null
         @Inject set
 
-    private val pageNumbers = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+    private val pageNumber = Random.nextInt(1, 43).toString()
 
     private fun isInternetConnected(): Boolean {
         val connectivityManager =
@@ -44,7 +45,7 @@ class ApiWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         if (isInternetConnected()) {
-            repository.getAllCharacters(pageNumbers.random()).collect {
+            repository.getAllCharacters(pageNumber = pageNumber).collect {
                 when (val currentState = it) {
                     is AppState.Success -> {
                         currentState.data?.let { characterResult ->
