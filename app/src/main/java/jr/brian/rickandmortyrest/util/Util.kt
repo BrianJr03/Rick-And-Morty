@@ -15,10 +15,9 @@ private val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Local
 private val outputFormat = SimpleDateFormat("MM/dd/yyyy", Locale.US)
 
 fun String.formatDate(): String {
-    inputFormat.parse(this)?.let {
-        return outputFormat.format(it)
-    }
-    return this
+    return inputFormat.parse(this)?.let {
+        outputFormat.format(it)
+    } ?: this
 }
 
 fun String.getStatusColor(): Color {
