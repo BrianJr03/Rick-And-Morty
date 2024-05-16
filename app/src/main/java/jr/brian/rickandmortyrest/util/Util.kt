@@ -1,5 +1,7 @@
 package jr.brian.rickandmortyrest.util
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -26,6 +28,23 @@ fun String.getStatusColor(): Color {
         "dead" -> Color.Red
         else -> Color.LightGray
     }
+}
+
+fun Context.showShortToast(msg: String) {
+    Toast.makeText(
+        this,
+        msg,
+        Toast.LENGTH_SHORT
+    ).show()
+}
+
+@Suppress("Unused")
+fun Context.showLongToast(msg: String) {
+    Toast.makeText(
+        this,
+        msg,
+        Toast.LENGTH_LONG
+    ).show()
 }
 
 @Composable

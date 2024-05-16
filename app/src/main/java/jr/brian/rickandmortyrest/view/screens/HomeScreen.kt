@@ -1,5 +1,7 @@
 package jr.brian.rickandmortyrest.view.screens
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -19,37 +21,45 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import jr.brian.rickandmortyrest.model.AppState
 import jr.brian.rickandmortyrest.model.local.Character
 import jr.brian.rickandmortyrest.model.local.database.CharacterDao
+import jr.brian.rickandmortyrest.util.showShortToast
 import jr.brian.rickandmortyrest.view.composables.CharacterCard
 import jr.brian.rickandmortyrest.view.composables.CustomDialog
 import jr.brian.rickandmortyrest.view.composables.DividerSection
 import jr.brian.rickandmortyrest.view.composables.LabelSection
 import jr.brian.rickandmortyrest.view.util.getScaleAndAlpha
 import jr.brian.rickandmortyrest.viewmodel.MainViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     dao: CharacterDao,
     viewModel: MainViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onFinish: () -> Unit
 ) {
     val characters = dao.getCharacters().collectAsState(initial = emptyList())
     val charactersFromSearch = remember { mutableStateOf<List<Character>>(emptyList()) }
     val selectedCharacter = remember { mutableStateOf(Character.EMPTY) }
 
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
 
@@ -59,9 +69,37 @@ fun HomeScreen(
     val isLoading = remember { mutableStateOf(false) }
     val isError = remember { mutableStateOf(false) }
     val isShowingDialog = remember { mutableStateOf(false) }
+    val isConfirmationRowShowing = remember { mutableStateOf(false) }
+    val canShowConfirmationRow = isConfirmationRowShowing.value
+            && characters.value.isNotEmpty()
 
-    val state = viewModel.state.collectAsState()
+    val appState = viewModel.state.collectAsState()
     val gridState = rememberLazyStaggeredGridState()
+
+    val backPressTime = remember { mutableLongStateOf(0L) }
+    val backPressJob = remember { mutableStateOf<Job?>(null) }
+
+    val handleBackPress = {
+        isConfirmationRowShowing.value = false
+        scope.launch {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - backPressTime.longValue <= 2000) {
+                onFinish()
+            } else {
+                gridState.animateScrollToItem(0)
+                backPressTime.longValue = currentTime
+                context.showShortToast("One more time to exit")
+                backPressJob.value?.cancel()
+                backPressJob.value = launch {
+                    delay(3000)
+                }
+            }
+        }
+    }
+
+    BackHandler {
+        handleBackPress()
+    }
 
     val searchOnClick = {
         focusManager.clearFocus()
@@ -75,7 +113,7 @@ fun HomeScreen(
         }
     }
 
-    when (val currentState = state.value) {
+    when (val currentState = appState.value) {
         is AppState.Success -> {
             isLoading.value = false
             isError.value = false
@@ -125,6 +163,7 @@ fun HomeScreen(
                 value = text.value,
                 onValueChange = {
                     text.value = it
+                    isConfirmationRowShowing.value = false
                 },
                 label = {
                     Text(text = "Character Name")
@@ -141,42 +180,85 @@ fun HomeScreen(
                         end = 15.dp,
                         bottom = 15.dp
                     )
+                    .onFocusChanged {
+                        if (it.hasFocus) {
+                            isConfirmationRowShowing.value = false
+                        }
+                    },
             )
         }
 
         item(span = StaggeredGridItemSpan.FullLine) {
-            Row(horizontalArrangement = Arrangement.Center) {
-                Button(
-                    shape = RectangleShape,
-                    modifier = Modifier.padding(
-                        start = 15.dp,
-                        bottom = 10.dp,
-                        end = 15.dp
-                    ),
-                    onClick = {
-                        searchOnClick()
+            AnimatedVisibility(visible = canShowConfirmationRow.not()) {
+                Row(horizontalArrangement = Arrangement.Center) {
+                    Button(
+                        shape = RectangleShape,
+                        modifier = Modifier.padding(
+                            start = 15.dp,
+                            bottom = 10.dp,
+                            end = 15.dp
+                        ),
+                        onClick = {
+                            searchOnClick()
+                        }
+                    ) {
+                        if (isLoading.value) {
+                            CircularProgressIndicator(color = Color.Black)
+                        } else {
+                            Text(text = "Search")
+                        }
                     }
-                ) {
-                    if (isLoading.value) {
-                        CircularProgressIndicator(color = Color.Black)
-                    } else {
-                        Text(text = "Search")
+
+                    Button(
+                        shape = RectangleShape,
+                        modifier = Modifier.padding(
+                            start = 15.dp,
+                            bottom = 10.dp,
+                            end = 15.dp
+                        ),
+                        onClick = {
+                            isConfirmationRowShowing.value =
+                                isConfirmationRowShowing.value.not()
+                        }
+                    ) {
+                        Text(text = "Clear All")
                     }
                 }
+            }
+        }
 
-                Button(
-                    shape = RectangleShape,
-                    modifier = Modifier.padding(
-                        start = 15.dp,
-                        bottom = 10.dp,
-                        end = 15.dp
-                    ),
-                    onClick = {
-                        charactersFromSearch.value = emptyList()
-                        dao.removeAllCharacters()
+        item(span = StaggeredGridItemSpan.FullLine) {
+            AnimatedVisibility(visible = canShowConfirmationRow) {
+                Row(horizontalArrangement = Arrangement.Center) {
+                    Button(
+                        shape = RectangleShape,
+                        modifier = Modifier.padding(
+                            start = 15.dp,
+                            bottom = 10.dp,
+                            end = 15.dp
+                        ),
+                        onClick = {
+                            charactersFromSearch.value = emptyList()
+                            dao.removeAllCharacters()
+                            isConfirmationRowShowing.value = false
+                        }
+                    ) {
+                        Text(text = "Yes")
                     }
-                ) {
-                    Text(text = "Clear All")
+
+                    Button(
+                        shape = RectangleShape,
+                        modifier = Modifier.padding(
+                            start = 15.dp,
+                            bottom = 10.dp,
+                            end = 15.dp
+                        ),
+                        onClick = {
+                            isConfirmationRowShowing.value = false
+                        }
+                    ) {
+                        Text(text = "No")
+                    }
                 }
             }
         }

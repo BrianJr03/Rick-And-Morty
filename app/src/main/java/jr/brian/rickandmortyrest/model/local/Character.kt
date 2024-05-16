@@ -21,24 +21,31 @@ data class Character(
     val type: String,
     val url: String
 ) {
-
     companion object {
+        private const val DEFAULT_EMPTY_VALUE = "N/A"
+
         private const val DEFAULT_IMAGE_URL =
             "https://rickandmortyapi.com/api/character/avatar/19.jpeg"
 
         val EMPTY = Character(
-            created = "Empty",
+            created = DEFAULT_EMPTY_VALUE,
             episode = listOf(),
-            gender = "Empty",
+            gender = DEFAULT_EMPTY_VALUE,
             id = -1,
             image = DEFAULT_IMAGE_URL,
-            location = Location(name = "Empty", url = "Empty"),
-            name = "Empty",
-            origin = Origin(name = "Empty", url = "Empty"),
-            species = "Empty",
-            status = "Empty",
-            type = "Empty",
-            url = "Empty"
+            location = Location(
+                name = DEFAULT_EMPTY_VALUE,
+                url = DEFAULT_EMPTY_VALUE
+            ),
+            name = DEFAULT_EMPTY_VALUE,
+            origin = Origin(
+                name = DEFAULT_EMPTY_VALUE,
+                url = DEFAULT_EMPTY_VALUE
+            ),
+            species = DEFAULT_EMPTY_VALUE,
+            status = DEFAULT_EMPTY_VALUE,
+            type = DEFAULT_EMPTY_VALUE,
+            url = DEFAULT_EMPTY_VALUE
         )
     }
 }

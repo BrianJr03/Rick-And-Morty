@@ -1,7 +1,6 @@
 package jr.brian.rickandmortyrest.view
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,7 +20,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import jr.brian.rickandmortyrest.model.local.database.CharacterDao
-import jr.brian.rickandmortyrest.model.remote.ApiWorker.Companion.fetchDataInBackground
 import jr.brian.rickandmortyrest.ui.theme.RickAndMortyRESTTheme
 import jr.brian.rickandmortyrest.view.screens.HomeScreen
 import jr.brian.rickandmortyrest.viewmodel.MainViewModel
@@ -37,9 +35,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        fetchDataInBackground(this) { msg ->
-            Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
-        }
+//        fetchDataInBackground(this) { msg ->
+//            Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
+//        }
         setContent {
             RickAndMortyRESTTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -47,7 +45,8 @@ class MainActivity : ComponentActivity() {
                         NavigationComposeShared(
                             dao = it,
                             viewModel = vm,
-                            scaffoldPaddingValues = innerPadding
+                            scaffoldPaddingValues = innerPadding,
+                            onFinish = { finish() }
                         )
                     }
                 }
@@ -68,7 +67,8 @@ class MainActivity : ComponentActivity() {
 fun NavigationComposeShared(
     dao: CharacterDao,
     viewModel: MainViewModel,
-    scaffoldPaddingValues: PaddingValues
+    scaffoldPaddingValues: PaddingValues,
+    onFinish: () -> Unit
 ) {
     SharedTransitionLayout {
         val navController = rememberNavController()
@@ -80,7 +80,8 @@ fun NavigationComposeShared(
                 HomeScreen(
                     dao = dao,
                     viewModel = viewModel,
-                    modifier = Modifier.padding(scaffoldPaddingValues)
+                    modifier = Modifier.padding(scaffoldPaddingValues),
+                    onFinish = { onFinish() }
                 )
             }
 
