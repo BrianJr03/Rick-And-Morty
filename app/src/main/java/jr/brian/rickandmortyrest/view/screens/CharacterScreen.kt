@@ -1,6 +1,9 @@
 package jr.brian.rickandmortyrest.view.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,7 +33,11 @@ import jr.brian.rickandmortyrest.util.formatDate
 import jr.brian.rickandmortyrest.util.getCharacterScreenColors
 import jr.brian.rickandmortyrest.util.getStatusColor
 import jr.brian.rickandmortyrest.view.composables.CharacterCard
+import jr.brian.rickandmortyrest.view.composables.ShakeConfig
+import jr.brian.rickandmortyrest.view.composables.rememberShakeController
+import jr.brian.rickandmortyrest.view.composables.addShakeController
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CharacterScreen(
     character: Character,
@@ -38,6 +46,7 @@ fun CharacterScreen(
     onDeleteCard: (Character) -> Unit
 ) {
     val (speciesColor, genderColor) = getCharacterScreenColors()
+    val shakeController = rememberShakeController()
     LazyColumn(
         modifier = modifier,
     ) {
@@ -60,7 +69,19 @@ fun CharacterScreen(
             }
             CharacterCard(
                 character = character,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .combinedClickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = {
+                            shakeController.shake(ShakeConfig.horizontalConfig())
+                        },
+                        onDoubleClick = {
+                            shakeController.shake(ShakeConfig.verticalConfig())
+                        }
+                    )
+                    .addShakeController(shakeController),
                 imageModifier = Modifier.fillMaxSize()
             )
             Column(modifier = Modifier.padding(start = 15.dp)) {
