@@ -174,11 +174,12 @@ fun HomeScreen(
                     isConfirmationRowShowing.value = false
                 },
                 label = {
-                    Text(text = "Character Name")
+                    Text(text = "Name of R&M Character")
                 },
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         searchOnClick()
+                        isConfirmationRowShowing.value = false
                     }
                 ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -246,6 +247,7 @@ fun HomeScreen(
                             end = 15.dp
                         ),
                         onClick = {
+                            focusManager.clearFocus()
                             charactersFromSearch.value = emptyList()
                             dao.removeAllCharacters()
                             isConfirmationRowShowing.value = false
