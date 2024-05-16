@@ -1,6 +1,5 @@
 package jr.brian.rickandmortyrest.view.composables
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -50,6 +49,7 @@ fun LabelSection(
         Spacer(modifier = Modifier.weight(1f))
         Text(
             text = label,
+            color = MaterialTheme.colorScheme.primary,
             style = TextStyle(fontSize = 20.sp)
         )
         Spacer(modifier = Modifier.weight(1f))

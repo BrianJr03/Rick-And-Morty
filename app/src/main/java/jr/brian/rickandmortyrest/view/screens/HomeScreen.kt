@@ -275,7 +275,7 @@ fun HomeScreen(
 
         item(span = StaggeredGridItemSpan.FullLine) {
             if (isError.value) {
-                LabelSection(label = errorMsg.value)
+                LabelSection(label = "An error occurred. Please try again.")
             }
         }
 
