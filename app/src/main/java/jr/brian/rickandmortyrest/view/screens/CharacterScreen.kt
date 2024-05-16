@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +34,8 @@ import jr.brian.rickandmortyrest.view.composables.CharacterCard
 fun CharacterScreen(
     character: Character,
     modifier: Modifier = Modifier,
+    isSavedCharacter: Boolean = false,
+    onDeleteCard: (Character) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -107,6 +112,19 @@ fun CharacterScreen(
                         regularText = character.location.name,
                     )
                 )
+                if (isSavedCharacter) {
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 40.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        onClick = {
+                            onDeleteCard(character)
+                        }
+                    ) {
+                        Text(text = "Delete Card", color = Color.White)
+                    }
+                }
             }
         }
     }

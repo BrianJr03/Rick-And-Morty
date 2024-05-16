@@ -68,7 +68,8 @@ fun HomeScreen(
 
     val isLoading = remember { mutableStateOf(false) }
     val isError = remember { mutableStateOf(false) }
-    val isShowingDialog = remember { mutableStateOf(false) }
+    val isShowingCharacterDialog = remember { mutableStateOf(false) }
+    val isSavedCharacter = remember { mutableStateOf(false) }
     val isConfirmationRowShowing = remember { mutableStateOf(false) }
     val canShowConfirmationRow = isConfirmationRowShowing.value
             && characters.value.isNotEmpty()
@@ -142,10 +143,17 @@ fun HomeScreen(
     }
 
     CustomDialog(
-        showDialog = isShowingDialog.value,
-        onDismissRequest = { isShowingDialog.value = false }
+        showDialog = isShowingCharacterDialog.value,
+        onDismissRequest = { isShowingCharacterDialog.value = false }
     ) {
-        CharacterScreen(selectedCharacter.value)
+        CharacterScreen(
+            character = selectedCharacter.value,
+            isSavedCharacter = isSavedCharacter.value,
+            onDeleteCard = {
+                dao.removeCharacter(it)
+                isShowingCharacterDialog.value = false
+            }
+        )
     }
 
     LazyVerticalStaggeredGrid(
@@ -296,7 +304,8 @@ fun HomeScreen(
                         )
                         .clickable {
                             selectedCharacter.value = charactersFromSearch.value[it]
-                            isShowingDialog.value = true
+                            isShowingCharacterDialog.value = true
+                            isSavedCharacter.value = false
                         }
                 )
             }
@@ -324,7 +333,8 @@ fun HomeScreen(
                     )
                     .clickable {
                         selectedCharacter.value = characters.value[it]
-                        isShowingDialog.value = true
+                        isShowingCharacterDialog.value = true
+                        isSavedCharacter.value = true
                     }
             )
         }
