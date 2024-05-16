@@ -1,7 +1,6 @@
 package jr.brian.rickandmortyrest.view.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,13 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import jr.brian.rickandmortyrest.R
 import jr.brian.rickandmortyrest.model.local.Character
-import jr.brian.rickandmortyrest.ui.theme.customBlue
-import jr.brian.rickandmortyrest.ui.theme.customGreen
 import jr.brian.rickandmortyrest.ui.theme.customPink
 import jr.brian.rickandmortyrest.ui.theme.customRed
-import jr.brian.rickandmortyrest.ui.theme.customYellow
 import jr.brian.rickandmortyrest.util.annotatedString
 import jr.brian.rickandmortyrest.util.formatDate
+import jr.brian.rickandmortyrest.util.getCharacterScreenColors
 import jr.brian.rickandmortyrest.util.getStatusColor
 import jr.brian.rickandmortyrest.view.composables.CharacterCard
 
@@ -40,11 +37,7 @@ fun CharacterScreen(
     isSavedCharacter: Boolean = false,
     onDeleteCard: (Character) -> Unit
 ) {
-    val (speciesColor, genderColor) =
-        if (isSystemInDarkTheme())
-            Pair(customGreen, customYellow)
-        else
-            Pair(customBlue, customRed)
+    val (speciesColor, genderColor) = getCharacterScreenColors()
     LazyColumn(
         modifier = modifier,
     ) {
@@ -92,7 +85,8 @@ fun CharacterScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Status: ",
-                        color = customPink
+                        color = customPink,
+                        style = TextStyle(fontWeight = FontWeight.Bold)
                     )
                     Text(
                         text = "•",
@@ -100,27 +94,33 @@ fun CharacterScreen(
                         style = TextStyle(fontSize = 30.sp),
                         color = character.status.getStatusColor()
                     )
-                    Text(text = character.status)
+                    Text(
+                        text = character.status,
+                        style = TextStyle(fontWeight = FontWeight.Bold)
+                    )
                 }
                 Text(
                     text = annotatedString(
                         coloredText = "Created:",
                         regularText = character.created.formatDate(),
                     ),
-                    modifier = Modifier.padding(bottom = 10.dp)
+                    modifier = Modifier.padding(bottom = 10.dp),
+                    style = TextStyle(fontWeight = FontWeight.Bold)
                 )
                 Text(
                     text = annotatedString(
                         coloredText = "From:",
                         regularText = character.origin.name,
                     ),
-                    modifier = Modifier.padding(bottom = 10.dp)
+                    modifier = Modifier.padding(bottom = 10.dp),
+                    style = TextStyle(fontWeight = FontWeight.Bold)
                 )
                 Text(
                     text = annotatedString(
                         coloredText = "Resides:",
                         regularText = character.location.name,
-                    )
+                    ),
+                    style = TextStyle(fontWeight = FontWeight.Bold)
                 )
                 if (isSavedCharacter) {
                     Button(

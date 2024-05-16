@@ -11,9 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import jr.brian.rickandmortyrest.model.local.Character
+import jr.brian.rickandmortyrest.util.getCharacterScreenColors
 
 @Composable
 fun CharacterCard(
@@ -21,6 +24,7 @@ fun CharacterCard(
     modifier: Modifier = Modifier,
     imageModifier: Modifier = Modifier
 ) {
+    val (primary, _) = getCharacterScreenColors()
     Card(
         modifier = modifier.padding(15.dp),
         elevation = CardDefaults.cardElevation(10.dp)
@@ -35,9 +39,9 @@ fun CharacterCard(
                 )
                 Text(
                     text = character.name,
-                    modifier = Modifier.padding(
-                        10.dp
-                    )
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(10.dp),
+                    color = primary
                 )
             }
         }
