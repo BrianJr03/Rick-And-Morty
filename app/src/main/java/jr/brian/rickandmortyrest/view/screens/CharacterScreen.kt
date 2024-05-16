@@ -1,6 +1,7 @@
 package jr.brian.rickandmortyrest.view.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,8 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import jr.brian.rickandmortyrest.R
 import jr.brian.rickandmortyrest.model.local.Character
+import jr.brian.rickandmortyrest.ui.theme.customBlue
 import jr.brian.rickandmortyrest.ui.theme.customGreen
 import jr.brian.rickandmortyrest.ui.theme.customPink
+import jr.brian.rickandmortyrest.ui.theme.customRed
 import jr.brian.rickandmortyrest.ui.theme.customYellow
 import jr.brian.rickandmortyrest.util.annotatedString
 import jr.brian.rickandmortyrest.util.formatDate
@@ -37,6 +40,11 @@ fun CharacterScreen(
     isSavedCharacter: Boolean = false,
     onDeleteCard: (Character) -> Unit
 ) {
+    val (speciesColor, genderColor) =
+        if (isSystemInDarkTheme())
+            Pair(customGreen, customYellow)
+        else
+            Pair(customBlue, customRed)
     LazyColumn(
         modifier = modifier,
     ) {
@@ -44,7 +52,7 @@ fun CharacterScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "#${character.id}",
-                    color = customGreen,
+                    color = speciesColor,
                     modifier = Modifier.padding(start = 15.dp),
                     style = TextStyle(
                         fontSize = 26.sp,
@@ -64,7 +72,11 @@ fun CharacterScreen(
             )
             Column(modifier = Modifier.padding(start = 15.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = character.species, color = customGreen)
+                    Text(
+                        text = character.species,
+                        color = speciesColor,
+                        style = TextStyle(fontWeight = FontWeight.Bold)
+                    )
                     Text(
                         text = "•", modifier = Modifier.padding(
                             start = 5.dp,
@@ -73,7 +85,8 @@ fun CharacterScreen(
                     )
                     Text(
                         text = character.gender,
-                        color = customYellow
+                        color = genderColor,
+                        style = TextStyle(fontWeight = FontWeight.Bold)
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -81,16 +94,13 @@ fun CharacterScreen(
                         text = "Status: ",
                         color = customPink
                     )
-                    Text(text = character.status)
                     Text(
                         text = "•",
-                        modifier = Modifier.padding(
-                            start = 5.dp,
-                            end = 5.dp
-                        ),
+                        modifier = Modifier.padding(end = 5.dp),
                         style = TextStyle(fontSize = 30.sp),
                         color = character.status.getStatusColor()
                     )
+                    Text(text = character.status)
                 }
                 Text(
                     text = annotatedString(
@@ -117,7 +127,7 @@ fun CharacterScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 40.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        colors = ButtonDefaults.buttonColors(containerColor = customRed),
                         onClick = {
                             onDeleteCard(character)
                         }
