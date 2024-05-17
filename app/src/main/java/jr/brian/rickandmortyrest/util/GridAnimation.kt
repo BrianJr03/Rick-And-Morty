@@ -1,4 +1,4 @@
-package jr.brian.rickandmortyrest.view.util
+package jr.brian.rickandmortyrest.util
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
