@@ -81,6 +81,7 @@ fun HomeScreen(
     val backPressJob = remember { mutableStateOf<Job?>(null) }
 
     val handleBackPress = {
+        focusManager.clearFocus()
         isConfirmationRowShowing.value = false
         scope.launch {
             val currentTime = System.currentTimeMillis()
@@ -108,7 +109,7 @@ fun HomeScreen(
             charactersFromSearch.value = emptyList()
             if (text.value.isNotBlank()) {
                 scope.launch {
-                    viewModel.getCharacterByName(text.value)
+                    viewModel.getCharactersByName(text.value)
                 }
             }
         }

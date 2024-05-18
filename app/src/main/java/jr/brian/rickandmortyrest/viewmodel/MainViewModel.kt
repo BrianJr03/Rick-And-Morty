@@ -15,9 +15,9 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
     private val _state = MutableStateFlow<AppState<CharacterResult?>>(AppState.Idle)
     val state = _state.asStateFlow()
-    fun getCharacterByName(name: String) {
+    fun getCharactersByName(name: String) {
         viewModelScope.launch {
-            repository.getCharacterByName(name).collect {
+            repository.getCharactersByName(name).collect {
                 _state.emit(it)
             }
         }
