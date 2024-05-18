@@ -1,4 +1,4 @@
-package jr.brian.rickandmortyrest.model.local
+package jr.brian.rickandmortyrest.model.local.rmcharacter
 
 data class Location(
     val name: String,

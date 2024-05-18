@@ -1,4 +1,4 @@
-package jr.brian.rickandmortyrest.view.composables
+package jr.brian.rickandmortyrest.util
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring

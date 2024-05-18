@@ -33,9 +33,9 @@ import jr.brian.rickandmortyrest.util.formatDate
 import jr.brian.rickandmortyrest.util.getCharacterScreenColors
 import jr.brian.rickandmortyrest.util.getStatusColor
 import jr.brian.rickandmortyrest.view.composables.CharacterCard
-import jr.brian.rickandmortyrest.view.composables.ShakeConfig
-import jr.brian.rickandmortyrest.view.composables.rememberShakeController
-import jr.brian.rickandmortyrest.view.composables.addShakeController
+import jr.brian.rickandmortyrest.util.ShakeConfig
+import jr.brian.rickandmortyrest.util.rememberShakeController
+import jr.brian.rickandmortyrest.util.addShakeController
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

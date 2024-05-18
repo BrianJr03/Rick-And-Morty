@@ -1,4 +1,4 @@
-package jr.brian.rickandmortyrest.model
+package jr.brian.rickandmortyrest.di
 
 import android.content.Context
 import androidx.room.Room

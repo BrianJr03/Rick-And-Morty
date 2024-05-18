@@ -1,4 +1,4 @@
-package jr.brian.rickandmortyrest.model.local
+package jr.brian.rickandmortyrest.model.local.rmcharacter
 
 data class Origin(
     val name: String,
