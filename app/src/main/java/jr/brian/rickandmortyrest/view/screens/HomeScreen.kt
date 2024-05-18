@@ -37,12 +37,12 @@ import androidx.compose.ui.unit.dp
 import jr.brian.rickandmortyrest.model.AppState
 import jr.brian.rickandmortyrest.model.local.Character
 import jr.brian.rickandmortyrest.model.local.database.CharacterDao
+import jr.brian.rickandmortyrest.util.getScaleAndAlpha
 import jr.brian.rickandmortyrest.util.showShortToast
 import jr.brian.rickandmortyrest.view.composables.CharacterCard
 import jr.brian.rickandmortyrest.view.composables.CustomDialog
 import jr.brian.rickandmortyrest.view.composables.DividerSection
 import jr.brian.rickandmortyrest.view.composables.LabelSection
-import jr.brian.rickandmortyrest.view.util.getScaleAndAlpha
 import jr.brian.rickandmortyrest.viewmodel.MainViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -81,6 +81,7 @@ fun HomeScreen(
     val backPressJob = remember { mutableStateOf<Job?>(null) }
 
     val handleBackPress = {
+        focusManager.clearFocus()
         isConfirmationRowShowing.value = false
         scope.launch {
             val currentTime = System.currentTimeMillis()
@@ -108,7 +109,7 @@ fun HomeScreen(
             charactersFromSearch.value = emptyList()
             if (text.value.isNotBlank()) {
                 scope.launch {
-                    viewModel.getCharacterByName(text.value)
+                    viewModel.getCharactersByName(text.value)
                 }
             }
         }
