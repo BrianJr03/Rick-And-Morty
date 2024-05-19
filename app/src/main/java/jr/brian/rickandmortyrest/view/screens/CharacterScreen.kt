@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import jr.brian.rickandmortyrest.R
 import jr.brian.rickandmortyrest.model.local.Character
-import jr.brian.rickandmortyrest.ui.theme.customPink
-import jr.brian.rickandmortyrest.ui.theme.customRed
+import jr.brian.rickandmortyrest.ui.theme.CustomPink
+import jr.brian.rickandmortyrest.ui.theme.CustomRed
 import jr.brian.rickandmortyrest.util.annotatedString
 import jr.brian.rickandmortyrest.util.formatDate
 import jr.brian.rickandmortyrest.util.getCharacterScreenColors
@@ -106,7 +106,7 @@ fun CharacterScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Status: ",
-                        color = customPink,
+                        color = CustomPink,
                         style = TextStyle(fontWeight = FontWeight.Bold)
                     )
                     Text(
@@ -148,7 +148,7 @@ fun CharacterScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 40.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = customRed),
+                        colors = ButtonDefaults.buttonColors(containerColor = CustomRed),
                         onClick = {
                             onDeleteCard(character)
                         }
