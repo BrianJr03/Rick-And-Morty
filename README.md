@@ -2,7 +2,7 @@
 
 ## About the Project
 
-A simple project based on the [Rick and Morty API](https://rickandmortyapi.com/)
+A simple Jetpack Compose app that uses the [Rick and Morty API](https://rickandmortyapi.com/)
 
 https://github.com/BrianJr03/Rick-And-Morty/assets/55070185/7dae2ec6-08a2-4669-9c7a-ed7477229d01
 
