@@ -48,5 +48,5 @@ If you want to build it yourself, follow the steps below.
 - DaggerHilt
 - WorkManager
 - Jetpack Compose
-- MVVM with Repository
 - Coroutines with Flows
+- MVVM with Repository
