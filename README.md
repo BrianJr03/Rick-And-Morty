@@ -44,9 +44,9 @@ If you want to build it yourself, follow the steps below.
 ## Tech Stack
 
 - Kotlin
-- Jetpack Compose
-- MVVM with Repository
-- Coroutines
 - RoomDB
 - DaggerHilt
 - WorkManager
+- Jetpack Compose
+- MVVM with Repository
+- Coroutines with Flows
