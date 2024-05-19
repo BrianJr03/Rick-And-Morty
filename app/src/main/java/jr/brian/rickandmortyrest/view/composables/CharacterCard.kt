@@ -13,9 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import jr.brian.rickandmortyrest.model.local.Character
+import jr.brian.rickandmortyrest.ui.theme.RickAndMortyRESTTheme
 import jr.brian.rickandmortyrest.util.getCharacterScreenColors
 
 @Composable
@@ -45,5 +47,13 @@ fun CharacterCard(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun CharacterCardPreview() {
+    RickAndMortyRESTTheme {
+        CharacterCard(character = Character.EMPTY)
     }
 }

@@ -5,6 +5,8 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import jr.brian.rickandmortyrest.model.local.rmcharacter.Location
+import jr.brian.rickandmortyrest.model.local.rmcharacter.Origin
 
 @Entity(tableName = "characters")
 data class Character(
@@ -24,11 +26,13 @@ data class Character(
     companion object {
         private const val DEFAULT_EMPTY_VALUE = "N/A"
 
+        private const val DEFAULT_CREATION_DATE = "2017-11-04T10:00:00.301Z"
+
         private const val DEFAULT_IMAGE_URL =
             "https://rickandmortyapi.com/api/character/avatar/19.jpeg"
 
         val EMPTY = Character(
-            created = DEFAULT_EMPTY_VALUE,
+            created = DEFAULT_CREATION_DATE,
             episode = listOf(),
             gender = DEFAULT_EMPTY_VALUE,
             id = -1,

@@ -1,6 +1,6 @@
 package jr.brian.rickandmortyrest.model.remote
 
-import jr.brian.rickandmortyrest.model.local.CharacterResult
+import jr.brian.rickandmortyrest.model.local.rmcharacter.CharacterResult
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

@@ -10,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import jr.brian.rickandmortyrest.ui.theme.RickAndMortyRESTTheme
 
 @Composable
 fun DividerSection(
@@ -53,5 +55,21 @@ fun LabelSection(
             style = TextStyle(fontSize = 20.sp)
         )
         Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+@Preview
+@Composable
+fun DividerSectionPreview() {
+    RickAndMortyRESTTheme {
+        DividerSection(label = "Test")
+    }
+}
+
+@Preview
+@Composable
+fun LabelSectionPreview() {
+    RickAndMortyRESTTheme {
+        LabelSection(label = "Test")
     }
 }
