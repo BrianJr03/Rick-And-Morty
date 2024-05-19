@@ -4,11 +4,10 @@
 
 A simple project based on the [Rick and Morty API](https://rickandmortyapi.com/)
 
+https://github.com/BrianJr03/Rick-And-Morty/assets/55070185/7dae2ec6-08a2-4669-9c7a-ed7477229d01
+
 <div align="center">
-  <a href="https://github.com/BrianJr03/Rick-And-Morty/blob/develop/screenshots/rm_video.mp4">
-    <img src="./screenshots/rick.png" width="300" alt="Demo Video"/>
-  </a>
-  <img src="./screenshots/rm_home_screen.jpg" width="300"  />
+  <img style="margin-left: 300px" src="./screenshots/rm_home_screen.jpg" width="300"/>
   <img style="margin-left: 300px" src="./screenshots/rm_dialog_screen.jpg" width="300"/>
 </div>
 
