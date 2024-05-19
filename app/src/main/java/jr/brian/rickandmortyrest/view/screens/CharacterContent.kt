@@ -15,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,12 +23,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import jr.brian.rickandmortyrest.R
 import jr.brian.rickandmortyrest.model.local.Character
 import jr.brian.rickandmortyrest.ui.theme.CustomPink
 import jr.brian.rickandmortyrest.ui.theme.CustomRed
+import jr.brian.rickandmortyrest.ui.theme.RickAndMortyRESTTheme
 import jr.brian.rickandmortyrest.util.annotatedString
 import jr.brian.rickandmortyrest.util.formatDate
 import jr.brian.rickandmortyrest.util.getCharacterScreenColors
@@ -36,10 +39,11 @@ import jr.brian.rickandmortyrest.view.composables.CharacterCard
 import jr.brian.rickandmortyrest.util.ShakeConfig
 import jr.brian.rickandmortyrest.util.rememberShakeController
 import jr.brian.rickandmortyrest.util.addShakeController
+import jr.brian.rickandmortyrest.view.composables.CustomDialog
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CharacterScreen(
+@OptIn(ExperimentalFoundationApi::class)
+fun CharacterContent(
     character: Character,
     modifier: Modifier = Modifier,
     isSavedCharacter: Boolean = false,
@@ -157,6 +161,25 @@ fun CharacterScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun CharacterDialogPreview() {
+    RickAndMortyRESTTheme {
+        val isShowing = remember {
+            mutableStateOf(true)
+        }
+        CustomDialog(
+            showDialog = isShowing.value,
+            onDismissRequest = {}
+        ) {
+            CharacterContent(
+                character = Character.EMPTY,
+                onDeleteCard = {}
+            )
         }
     }
 }

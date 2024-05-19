@@ -99,10 +99,6 @@ fun HomeScreen(
         }
     }
 
-    BackHandler {
-        handleBackPress()
-    }
-
     val searchOnClick = {
         focusManager.clearFocus()
         if (!isLoading.value) {
@@ -113,6 +109,10 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    BackHandler {
+        handleBackPress()
     }
 
     when (val currentState = appState.value) {
@@ -147,7 +147,7 @@ fun HomeScreen(
         showDialog = isShowingCharacterDialog.value,
         onDismissRequest = { isShowingCharacterDialog.value = false }
     ) {
-        CharacterScreen(
+        CharacterContent(
             character = selectedCharacter.value,
             isSavedCharacter = isSavedCharacter.value,
             onDeleteCard = {
