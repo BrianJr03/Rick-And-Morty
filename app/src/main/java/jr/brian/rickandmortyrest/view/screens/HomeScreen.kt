@@ -85,7 +85,7 @@ fun HomeScreen(
         isConfirmationRowShowing.value = false
         scope.launch {
             val currentTime = System.currentTimeMillis()
-            if (currentTime - backPressTime.longValue <= 2000) {
+            if (currentTime - backPressTime.longValue <= 1500) {
                 onFinish()
             } else {
                 gridState.animateScrollToItem(0)
